@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using  TodoApi;
-
-
+using TodoApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +7,7 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
     ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
-    
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
@@ -34,21 +32,22 @@ app.MapGet("/items", async (ToDoDbContext db) =>
      await db.Items.ToListAsync());
 
 
-app.MapPost("/items", async (string name, ToDoDbContext db) => {
-   
-   var newItem= new Item{
-        Iditem=83,
-        Taskname=name,
-        Iscomplate=false
-   };
-        
-    
+app.MapPost("/items", async (string name, ToDoDbContext db) =>
+{
+
+    var newItem = new Item
+    {
+        Taskname = name,
+        Iscomplate = false
+    };
+
+
     db.Items.Add(newItem);
     await db.SaveChangesAsync();
-    return Results.Created($"/items/{newItem.Iditem}",newItem);
+    return Results.Created($"/items/{newItem.Iditem}", newItem);
 });
 
-app.MapPut("/items/id", async (int id, bool inputItem, ToDoDbContext db)=> 
+app.MapPut("/items/id", async (int id, bool inputItem, ToDoDbContext db) =>
 {
     var item = await db.Items.FindAsync(id);
 
@@ -57,10 +56,12 @@ app.MapPut("/items/id", async (int id, bool inputItem, ToDoDbContext db)=>
     item.Iscomplate = inputItem;
 
     await db.SaveChangesAsync();
-    return Results.NoContent();});
+    return Results.NoContent();
+});
 
-app.MapDelete("/items/{id}",async (int id, ToDoDbContext db)=>
-{var item = await db.Items.FindAsync(id);
+app.MapDelete("/items/{id}", async (int id, ToDoDbContext db) =>
+{
+    var item = await db.Items.FindAsync(id);
 
     if (item is null) return Results.NotFound();
 
@@ -72,8 +73,7 @@ app.UseCors("AllowAll");
 
 app.Run();
 
-////////////
-///
+
 //using Microsoft.EntityFrameworkCore;
 
 
@@ -122,3 +122,4 @@ app.Run();
 
 ///
 ///////
+//dotnet ef dbcontext scaffold Name=DefaultConnection Pomelo.EntityFrameworkCore.MySql  -f -c ToDoDbContext
